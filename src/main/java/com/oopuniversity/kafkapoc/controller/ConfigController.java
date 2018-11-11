@@ -35,6 +35,15 @@ public class ConfigController {
         return config.getConfigurationValue(key);
     }
 
+    /**
+     * RESTful interface to set a configuration value
+     * <p>
+     * Please note:  This does NOT directly update the internal data store.  It simply pushes the desired
+     * value onto the config topic and leaves the rest up to the ecosystem.
+     *
+     * @param key   Name of the configuration value to be set
+     * @param value Value to be set
+     */
     @PostMapping("/config/set/{key}/{value}")
     public void putConfigValue(@PathVariable("key") String key, @PathVariable("value") String value) {
         //Do NOT set configuration directly, stick it onto a Kafka stream.
