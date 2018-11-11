@@ -18,4 +18,4 @@ logging:
 
 config:
   startup:
-    seek: 13
+    seek: nowhere

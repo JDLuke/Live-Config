@@ -73,11 +73,21 @@ public class ConfigListener implements ConsumerSeekAware {
         if ("Start".equalsIgnoreCase(configStart)) {
             logger.info("Seeking to beginning of topic");
             callback.seekToBeginning("config", 0);
-        } else if (new Integer(configStart) > 0) {
+        } else {
             logger.info("Seeking to position <" + configStart + ">");
-            callback.seek("config", 0, new Integer(configStart).intValue());
+            callback.seek("config", 0, calculateStartPositionFromConfiguration(configStart));
         }
 
+    }
+
+    private int calculateStartPositionFromConfiguration(String configStart) {
+        try {
+            Integer integer = new Integer(configStart);
+            return integer.intValue();
+        } catch (NumberFormatException nfe) {
+            logger.throwing(ConfigListener.class.getName(), "calculateStartPositionFromConfiguration", nfe);
+        }
+        return 0;
     }
 
     /**
