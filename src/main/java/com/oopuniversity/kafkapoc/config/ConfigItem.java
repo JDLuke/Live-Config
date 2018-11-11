@@ -4,10 +4,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ConfigItem {
-    public String key;
-    public String value;
+    private String key;
+    private String value;
 
-    public ConfigItem() {};
+    public ConfigItem() {
+    }
 
     public ConfigItem(String key, String value) {
         this.key = key;
@@ -21,4 +22,5 @@ public class ConfigItem {
     public String getValue() {
         return value;
     }
+
 }

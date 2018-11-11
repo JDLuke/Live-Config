@@ -12,7 +12,7 @@ public class Config {
     @Autowired
     Map<String,String> appConfiguration;
 
-    Logger logger = Logger.getLogger(Config.class.getName());
+    private Logger logger = Logger.getLogger(Config.class.getName());
 
     public Map<String,String> getAppConfiguration() {
         return appConfiguration;
@@ -25,9 +25,16 @@ public class Config {
         return value;
     }
 
-    public void setConfigurationValue(ConfigItem value) {
-        logger.config("Setting configuration key '" + value.getKey() + "' to '" + value.getValue() + "'" );
-        appConfiguration.put(value.getKey(), value.getValue());
+    protected void setConfigurationValue(ConfigItem value) {
+        logger.config("Setting configuration key <" + value.getKey() + "> to <" + value.getValue() + ">");
+        if (value.getValue().length() == 0) {
+            logger.config("Deleting...");
+            appConfiguration.remove(value.getKey());
+        } else {
+            logger.config("Updating...");
+            appConfiguration.put(value.getKey(), value.getValue());
+        }
+        logger.exiting(this.getClass().getName(), "setConfigurationValue");
     }
 
     public String toString() {
