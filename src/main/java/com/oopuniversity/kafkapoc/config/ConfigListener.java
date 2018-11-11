@@ -3,7 +3,6 @@ package com.oopuniversity.kafkapoc.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ConsumerSeekAware;
@@ -24,8 +23,6 @@ public class ConfigListener implements ConsumerSeekAware {
 
     //private ConsumerSeekCallback seekCallback;
     private Logger logger = Logger.getLogger(Config.class.getName());
-    @Value("${config.startup.seek}")
-    private String configStart;
     @Autowired
     KafkaTemplate kafkaTemplate;
     @KafkaListener(topics = "config")
@@ -65,17 +62,19 @@ public class ConfigListener implements ConsumerSeekAware {
     @Override
     public void onPartitionsAssigned(Map<TopicPartition, Long> assignments, ConsumerSeekCallback callback) {
         logger.info("onPartitionsAssigned: " + assignments.toString() + ", " + callback.getClass().getSimpleName());
-        logger.info("Value of configStart is " + configStart);
+        logger.info("Value of configStart is " + config.getConfigStart());
         logger.info("Current positions are:");
         for (TopicPartition key : assignments.keySet()) {
             logger.info(key.topic() + "=<" + assignments.get(key) + ">");
         }
-        if ("Start".equalsIgnoreCase(configStart)) {
+        if ("End".equalsIgnoreCase(config.getConfigStart())) {
+            logger.info("Not bothering with any kind of seek.");
+        } else if ("Start".equalsIgnoreCase(config.getConfigStart())) {
             logger.info("Seeking to beginning of topic");
             callback.seekToBeginning("config", 0);
         } else {
-            logger.info("Seeking to position <" + configStart + ">");
-            callback.seek("config", 0, calculateStartPositionFromConfiguration(configStart));
+            logger.info("Seeking to position <" + config.getConfigStart() + ">");
+            callback.seek("config", 0, calculateStartPositionFromConfiguration(config.getConfigStart()));
         }
 
     }

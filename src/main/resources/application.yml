@@ -15,7 +15,11 @@ logging:
     org.yaml: warn
     com.oopuniversity.kafkapoc.config: trace
     com.oopuniversity.kafkapoc: debug
-
+#startup provides a way of ignoring really old configuration values which are no longer needed.
+#This can be because they are obsolete, or because their values have all been updated so there
+#is no reason to dig quite so far into the past.
+#Valid values are 'Start', 'End', or an integer in the range of 0 to whatever the last position number is.  If
+#you set a value higher than the last position number the net effect is to start from the end.
 config:
   startup:
-    seek: nowhere
+    seek: 10

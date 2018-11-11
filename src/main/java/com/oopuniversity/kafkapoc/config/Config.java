@@ -4,6 +4,7 @@ package com.oopuniversity.kafkapoc.config;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 import java.util.logging.Logger;
@@ -12,8 +13,14 @@ public class Config {
     @Autowired
     Map<String,String> appConfiguration;
 
+    @Value("${config.startup.seek}")
+    private String configStart;
+
     private Logger logger = Logger.getLogger(Config.class.getName());
 
+    public String getConfigStart() {
+        return configStart;
+    }
     /**
      * If I remove this it's no longer a Bean that Spring can play with...
      * <p>
