@@ -14,3 +14,7 @@ logging:
     org.springframework: warn
     org.yaml: warn
     com.oopuniversity: debug
+
+config:
+  startup:
+    seek: Start

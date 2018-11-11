@@ -3,6 +3,7 @@ package com.oopuniversity.kafkapoc.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.listener.ConsumerSeekAware;
 import org.springframework.stereotype.Component;
@@ -17,9 +18,13 @@ import java.util.logging.Logger;
  */
 @Component
 public class ConfigListener implements ConsumerSeekAware {
-    Logger logger = Logger.getLogger(Config.class.getName());
+    @Autowired
+    Config config;
 
-    private ConsumerSeekCallback seekCallback;
+    //private ConsumerSeekCallback seekCallback;
+    private Logger logger = Logger.getLogger(Config.class.getName());
+    @Value("${config.startup.seek}")
+    private String configStart;
 
     @KafkaListener(topics = "config")
     public void processMessage(String content) {
@@ -33,7 +38,6 @@ public class ConfigListener implements ConsumerSeekAware {
         logger.exiting(this.getClass().getName(), "processMessage");
     }
 
-    @Autowired Config config;
 
     /**
      * Register the callback to use when seeking at some arbitrary time. When used with a
@@ -46,7 +50,7 @@ public class ConfigListener implements ConsumerSeekAware {
     public void registerSeekCallback(ConsumerSeekCallback callback) {
         System.out.println("registerSeekCallback: " + callback.getClass().getSimpleName());
 
-        this.seekCallback = callback;
+        //this.seekCallback = callback;
     }
 
     /**
@@ -57,8 +61,13 @@ public class ConfigListener implements ConsumerSeekAware {
      */
     @Override
     public void onPartitionsAssigned(Map<TopicPartition, Long> assignments, ConsumerSeekCallback callback) {
-        System.out.println("onPartitionsAssigned: " + assignments.toString() + ", " + callback.getClass().getSimpleName());
-        callback.seekToBeginning("config", 0);
+        logger.info("onPartitionsAssigned: " + assignments.toString() + ", " + callback.getClass().getSimpleName());
+        logger.info("Value of configStart is " + configStart);
+
+        if ("Start".equalsIgnoreCase(configStart)) {
+            logger.info("Seeking to beginning of topic");
+            callback.seekToBeginning("config", 0);
+        }
     }
 
     /**
