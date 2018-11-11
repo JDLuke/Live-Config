@@ -23,3 +23,24 @@ logging:
 config:
   startup:
     seek: 10
+management:
+  endpoint:
+    health:
+      enabled: true
+    beans:
+      enabled: true
+    env:
+      enabled: true
+    logfile:
+      enabled: true
+    metrics:
+      enabled: true
+  health:
+    rabbit:
+      enabled: false
+    status:
+      order: DOWN, OUT_OF_SERVICE, UNKNOWN, UP
+  endpoints:
+    web:
+      exposure:
+        include: '*'
