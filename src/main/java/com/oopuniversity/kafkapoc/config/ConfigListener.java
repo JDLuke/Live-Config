@@ -5,6 +5,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ConsumerSeekAware;
 import org.springframework.stereotype.Component;
 
@@ -25,9 +26,11 @@ public class ConfigListener implements ConsumerSeekAware {
     private Logger logger = Logger.getLogger(Config.class.getName());
     @Value("${config.startup.seek}")
     private String configStart;
-
+    @Autowired
+    KafkaTemplate kafkaTemplate;
     @KafkaListener(topics = "config")
     public void processMessage(String content) {
+
         logger.entering(this.getClass().getName(), "processMessage", content);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -63,11 +66,18 @@ public class ConfigListener implements ConsumerSeekAware {
     public void onPartitionsAssigned(Map<TopicPartition, Long> assignments, ConsumerSeekCallback callback) {
         logger.info("onPartitionsAssigned: " + assignments.toString() + ", " + callback.getClass().getSimpleName());
         logger.info("Value of configStart is " + configStart);
-
+        logger.info("Current positions are:");
+        for (TopicPartition key : assignments.keySet()) {
+            logger.info(key.topic() + "=<" + assignments.get(key) + ">");
+        }
         if ("Start".equalsIgnoreCase(configStart)) {
             logger.info("Seeking to beginning of topic");
             callback.seekToBeginning("config", 0);
+        } else if (new Integer(configStart) > 0) {
+            logger.info("Seeking to position <" + configStart + ">");
+            callback.seek("config", 0, new Integer(configStart).intValue());
         }
+
     }
 
     /**

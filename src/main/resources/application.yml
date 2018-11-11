@@ -13,8 +13,9 @@ logging:
   level:
     org.springframework: warn
     org.yaml: warn
-    com.oopuniversity: debug
+    com.oopuniversity.kafkapoc.config: trace
+    com.oopuniversity.kafkapoc: debug
 
 config:
   startup:
-    seek: Start
+    seek: 13
