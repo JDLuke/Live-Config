@@ -14,6 +14,14 @@ public class Config {
 
     private Logger logger = Logger.getLogger(Config.class.getName());
 
+    /**
+     * If I remove this it's no longer a Bean that Spring can play with...
+     * <p>
+     * However, I'm not really a fan of exposing it this way.
+     *
+     * @return
+     * @TODO Get rid of this tech debt
+     */
     public Map<String,String> getAppConfiguration() {
         return appConfiguration;
     }
