@@ -1,0 +1,16 @@
+spring:
+  kafka:
+    consumer:
+      group-id:
+        myGroup
+      client-id:
+        config
+
+    bootstrap-servers:
+      localhost:9092
+
+logging:
+  level:
+    org.springframework: warn
+    org.yaml: warn
+    com.oopuniversity: debug

@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.3.12'
+    id 'org.springframework.boot' version '2.1.0.RELEASE'
+
+}
+
+group 'com.oopuniversity'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+apply plugin: 'io.spring.dependency-management'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.apache.kafka', name: 'connect-api', version: '2.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.1.0.RELEASE'
+// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-amqp', version: '2.1.0.RELEASE'
+    // https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka
+    compile group: 'org.springframework.kafka', name: 'spring-kafka', version: '2.2.0.RELEASE'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+intellij {
+    version '2018.2.4'
+}
+patchPluginXml {
+    changeNotes """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
+}
