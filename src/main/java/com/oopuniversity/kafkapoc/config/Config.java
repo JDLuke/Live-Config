@@ -26,9 +26,10 @@ public class Config {
      * <p>
      * However, I'm not really a fan of exposing it this way.
      *
-     * @return
-     * @TODO Get rid of this tech debt
+     * @return A Map containing the entire current set of configuration entries
+     *
      */
+    //TODO Get rid of this tech debt
     public Map<String,String> getAppConfiguration() {
         return appConfiguration;
     }

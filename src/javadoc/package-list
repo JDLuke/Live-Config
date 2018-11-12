@@ -1,5 +1,5 @@
 com.oopuniversity.kafkapoc
-com.oopuniversity.kafkapoc.appconfig
 com.oopuniversity.kafkapoc.config
 com.oopuniversity.kafkapoc.controller
 com.oopuniversity.kafkapoc.exceptions
+com.oopuniversity.kafkapoc.management
