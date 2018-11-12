@@ -15,4 +15,4 @@ In order to run and test this you will need:
 * A copy of gradle that works on your system
 * A recent JDK (I built this with Java 8 and made no efforts to think about backward compatibility)
 * A running instance of Kafka.  Just follow their quickstart far enough to get the server up and running.
-* Either curl or Postman, if you want to exercise the endpoints
+* Either curl or Postman, if you want to exercise the endpoints.  IntelliJ also has a client, or you can just roll your own if you're into that kind of thing.
