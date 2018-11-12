@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oopuniversity.kafkapoc.config.Config;
 import com.oopuniversity.kafkapoc.config.ConfigItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,7 @@ public class ConfigController {
      * @return A String value containing the value of the configuration property if found.
      * If there is no such property return an empty string
      */
-    @GetMapping("/config/get/{key}")
+    @GetMapping(value = "/config/get/{key}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getConfigValueFor(@PathVariable("key") String key) {
         return config.getConfigurationValue(key);
     }
@@ -58,7 +59,7 @@ public class ConfigController {
      * Get a JSON representation of the entire current application configuration
      * @return A representation of the entire Config object
      */
-    @GetMapping("/config/get")
+    @GetMapping(value = "/config/get", produces = MediaType.APPLICATION_JSON_VALUE)
     public Config getConfiguration() {
         return config;
     }
