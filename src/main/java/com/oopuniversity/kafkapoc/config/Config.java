@@ -22,9 +22,6 @@ public class Config {
         return configStart;
     }
     /**
-     * If I remove this it's no longer a Bean that Spring can play with...
-     * <p>
-     * However, I'm not really a fan of exposing it this way.
      *
      * @return A Map containing the entire current set of configuration entries
      *
