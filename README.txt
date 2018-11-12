@@ -6,10 +6,7 @@ but you can also directly post to the Kafka config topic from any other source.
 If a configuration value already exists, it will be overwritten.  If the new value is an empty String, the configuration key 
 will be deleted.
 
-The system is currently configured to start up and immediately load all configuration values from the beginning of time.  
-
 Future plans include:  
-* Allowing system to start empty
 * Export/Import of current configuration 
 * Starting a new instance and loading configuration from another running instance
 * Controls to clear configuration, reload it from the beginning of the era, or reload it from a particular time
