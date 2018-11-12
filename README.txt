@@ -15,7 +15,7 @@ Future plans include:
 * Controls to clear configuration, reload it from the beginning of the era, or reload it from a particular time
 
 In order to run and test this you will need:
-* A copy of gradle
-* A recent JDK
-* A running instance of Kafka
-* Either curl or Postman
+* A copy of gradle that works on your system
+* A recent JDK (I built this with Java 8 and made no efforts to think about backward compatibility)
+* A running instance of Kafka.  Just follow their quickstart far enough to get the server up and running.
+* Either curl or Postman, if you want to exercise the endpoints
