@@ -26,7 +26,6 @@ public class Config {
      * @return A Map containing the entire current set of configuration entries
      *
      */
-    //TODO Get rid of this tech debt
     public Map<String,String> getAppConfiguration() {
         return appConfiguration;
     }
@@ -38,7 +37,7 @@ public class Config {
         return value;
     }
 
-    protected void setConfigurationValue(ConfigItem value) {
+    void setConfigurationValue(ConfigItem value) {
         logger.config("Setting configuration key <" + value.getKey() + "> to <" + value.getValue() + ">");
         if (value.getValue().length() == 0) {
             logger.config("Deleting...");
