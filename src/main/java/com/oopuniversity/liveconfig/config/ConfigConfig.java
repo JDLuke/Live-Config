@@ -1,4 +1,4 @@
-package com.oopuniversity.kafkapoc.config;
+package com.oopuniversity.liveconfig.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

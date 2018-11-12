@@ -1,4 +1,4 @@
-package com.oopuniversity.kafkapoc.management;
+package com.oopuniversity.liveconfig.management;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
