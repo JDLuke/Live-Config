@@ -22,7 +22,8 @@ logging:
 #you set a value higher than the last position number the net effect is to start from the end.
 config:
   startup:
-    seek: 10
+    topic: config
+    seek: 0
 management:
   endpoint:
     health:
@@ -40,6 +41,8 @@ management:
       enabled: false
     status:
       order: DOWN, OUT_OF_SERVICE, UNKNOWN, UP
+    defaults:
+      enabled: true
   endpoints:
     web:
       exposure:

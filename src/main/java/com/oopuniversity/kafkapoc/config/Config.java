@@ -13,6 +13,12 @@ public class Config {
     @Autowired
     Map<String,String> appConfiguration;
 
+    @Value("${config.startup.topic}")
+    private String topicName;
+
+    public String getTopicName() {
+        return topicName;
+    }
     @Value("${config.startup.seek}")
     private String configStart;
 

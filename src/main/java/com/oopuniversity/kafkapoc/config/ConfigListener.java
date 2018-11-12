@@ -18,20 +18,32 @@ import java.util.logging.Logger;
  */
 @Component
 public class ConfigListener implements ConsumerSeekAware {
+    int currentKafkaIndex = 0;
+    private ConsumerSeekCallback seekCallback;
+
+    //TODO Associate current index with a specific topic
+    public int getCurrentKafkaIndex() {
+        return currentKafkaIndex;
+    }
+
     @Autowired
     Config config;
 
-    //private ConsumerSeekCallback seekCallback;
+    public void setCurrentKafkaIndex(String topic, int partition, int currentKafkaIndex) {
+        this.currentKafkaIndex = currentKafkaIndex;
+        seekCallback.seek(topic, partition, currentKafkaIndex);
+    }
     private Logger logger = Logger.getLogger(Config.class.getName());
     @Autowired
     KafkaTemplate kafkaTemplate;
-    @KafkaListener(topics = "config")
-    public void processMessage(String content) {
 
+    @KafkaListener(topics = "${config.startup.topic}")
+    public void processMessage(String content) {
         logger.entering(this.getClass().getName(), "processMessage", content);
+        currentKafkaIndex++;
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            config.setConfigurationValue(objectMapper.readValue(content,ConfigItem.class));
+            config.setConfigurationValue(objectMapper.readValue(content, ConfigItem.class));
         } catch (Exception e) {
             logger.finer("Invalid configuration parameter found on queue: <" + content + ">");
         }
@@ -48,9 +60,10 @@ public class ConfigListener implements ConsumerSeekAware {
      */
     @Override
     public void registerSeekCallback(ConsumerSeekCallback callback) {
-        System.out.println("registerSeekCallback: " + callback.getClass().getSimpleName());
+        logger.entering(this.getClass().getName(), "registerSeekCallback", callback);
 
-        //this.seekCallback = callback;
+        logger.info("Storing ConsumerSeekCallback for future use.");
+        this.seekCallback = callback;
     }
 
     /**
@@ -66,15 +79,21 @@ public class ConfigListener implements ConsumerSeekAware {
         logger.info("Current positions are:");
         for (TopicPartition key : assignments.keySet()) {
             logger.info(key.topic() + "=<" + assignments.get(key) + ">");
+            if (config.getTopicName().equals(key.topic())) {
+                currentKafkaIndex = new Long(assignments.get(key)).intValue();
+            }
         }
+
         if ("End".equalsIgnoreCase(config.getConfigStart())) {
             logger.info("Not bothering with any kind of seek.");
         } else if ("Start".equalsIgnoreCase(config.getConfigStart())) {
             logger.info("Seeking to beginning of topic");
-            callback.seekToBeginning("config", 0);
+            setCurrentKafkaIndex(config.getTopicName(), 0, 0);
+            currentKafkaIndex = 0;
         } else {
             logger.info("Seeking to position <" + config.getConfigStart() + ">");
-            callback.seek("config", 0, calculateStartPositionFromConfiguration(config.getConfigStart()));
+            int startPosition = calculateStartPositionFromConfiguration(config.getConfigStart());
+            setCurrentKafkaIndex(config.getTopicName(), 0, startPosition);
         }
 
     }
@@ -98,7 +117,7 @@ public class ConfigListener implements ConsumerSeekAware {
      */
     @Override
     public void onIdleContainer(Map<TopicPartition, Long> assignments, ConsumerSeekCallback callback) {
-        System.out.println("onIdleContainer: " + assignments.toString() + ", " + callback.getClass().getSimpleName());
+        logger.entering(this.getClass().getName(), "onIdleContainer", new Object[]{assignments, callback});
 
     }
 }
