@@ -1,31 +1,43 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.3.12'
-    id 'org.springframework.boot' version '2.1.0.RELEASE'
-
+    id 'org.springframework.boot' version '2.5.4'
 }
 
 group 'com.oopuniversity'
-version '1.0-SNAPSHOT'
+version '1.1-SNAPSHOT'
 
 sourceCompatibility = 1.8
 apply plugin: 'io.spring.dependency-management'
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
 dependencies {
-    compile group: 'org.apache.kafka', name: 'connect-api', version: '2.0.0'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.1.0.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-amqp', version: '2.1.0.RELEASE'
-    compile group: 'org.springframework.kafka', name: 'spring-kafka', version: '2.2.0.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.1.0.RELEASE'
+    //Add kafka-clients implementation to the dependencies
+    implementation group: 'org.apache.kafka', name: 'kafka-clients', version: '3.6.1'
+    implementation group: 'org.apache.kafka', name: 'connect-api', version: '3.0.0'
+    //add logback-core implementation to the dependencies
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.4.14'
+    // add logback implementation to the dependencies
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.14'
+    //add jackson-databind implementation to the dependencies
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.1'
+    //add tomcat-embed-core implementation to the dependencies
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '11.0.0-M13'
+    //add tomcat-embed-websocket implementation to the dependencies
+    implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '11.0.0-M13'
+    // add spring-boot-autoconfigure implementation to the dependencies
+    implementation group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '3.2.1'
+    //add spring-boot-starter-web implementation to the dependencies
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.2.1'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-amqp', version: '3.2.1'
+    implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '3.2.1'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '3.2.1'
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.apache.kafka:kafka-streams'
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
-intellij {
-    version '2018.2.4'
-}
