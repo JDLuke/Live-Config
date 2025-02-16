@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static java.lang.Integer.parseInt;
+
 
 /**
  * ConfigListener will listen to a Kafka topic in order to build and maintain the configuration
@@ -80,7 +82,7 @@ public class ConfigListener implements ConsumerSeekAware {
         for (TopicPartition key : assignments.keySet()) {
             logger.info(key.topic() + "=<" + assignments.get(key) + ">");
             if (config.getTopicName().equals(key.topic())) {
-                currentKafkaIndex = new Long(assignments.get(key)).intValue();
+                currentKafkaIndex = assignments.get(key).intValue();
             }
         }
 
@@ -100,8 +102,7 @@ public class ConfigListener implements ConsumerSeekAware {
 
     private int calculateStartPositionFromConfiguration(String configStart) {
         try {
-            Integer integer = new Integer(configStart);
-            return integer.intValue();
+            return parseInt(configStart);
         } catch (NumberFormatException nfe) {
             logger.throwing(ConfigListener.class.getName(), "calculateStartPositionFromConfiguration", nfe);
         }
