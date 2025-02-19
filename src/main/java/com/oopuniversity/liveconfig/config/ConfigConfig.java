@@ -17,5 +17,4 @@ public class ConfigConfig {
     Map<String, String> getAppConfiguration() {
         return new HashMap<>();
     }
-
 }

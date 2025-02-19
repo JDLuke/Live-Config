@@ -22,7 +22,7 @@ public class ConfigController {
 
     @Autowired
     public KafkaTemplate kafkaTemplate;
-    private Logger logger = Logger.getLogger("config");
+    private final Logger logger = Logger.getLogger("config");
 
     /**
      * Get the value of one configuration entry.

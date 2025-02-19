@@ -5,11 +5,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 import java.util.logging.Logger;
 
 public class Config {
+
     @Autowired
     Map<String,String> appConfiguration;
 
@@ -22,7 +25,7 @@ public class Config {
     @Value("${config.startup.seek}")
     private String configStart;
 
-    private Logger logger = Logger.getLogger(Config.class.getName());
+    private final Logger logger = Logger.getLogger(Config.class.getName());
 
     public String getConfigStart() {
         return configStart;
@@ -32,9 +35,6 @@ public class Config {
      * @return A Map containing the entire current set of configuration entries
      *
      */
-    public Map<String,String> getAppConfiguration() {
-        return appConfiguration;
-    }
 
     public String getConfigurationValue(String key) {
         String value;

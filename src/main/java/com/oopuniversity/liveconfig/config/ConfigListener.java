@@ -24,9 +24,6 @@ public class ConfigListener implements ConsumerSeekAware {
     private ConsumerSeekCallback seekCallback;
 
     //TODO Associate current index with a specific topic
-    public int getCurrentKafkaIndex() {
-        return currentKafkaIndex;
-    }
 
     @Autowired
     Config config;
@@ -36,8 +33,6 @@ public class ConfigListener implements ConsumerSeekAware {
         seekCallback.seek(topic, partition, currentKafkaIndex);
     }
     private Logger logger = Logger.getLogger(Config.class.getName());
-    @Autowired
-    KafkaTemplate kafkaTemplate;
 
     @KafkaListener(topics = "${config.startup.topic}")
     public void processMessage(String content) {
