@@ -1,6 +1,7 @@
 package com.oopuniversity.liveconfig.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.listener.ConsumerSeekAware;
@@ -8,10 +9,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.oopuniversity.liveconfig.logging.LogUtil.logError;
 import static com.oopuniversity.liveconfig.logging.LogUtil.logMessage;
-import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
 
 
 /**
@@ -20,33 +22,50 @@ import static java.lang.Integer.parseInt;
  */
 @Component
 public class ConfigListener implements ConsumerSeekAware {
-    int currentKafkaIndex = 0;
+    Long currentKafkaIndex = 0L;
     private ConsumerSeekCallback seekCallback;
 
+    boolean isReady = false;
+    public boolean isReady() {
+        return isReady;
+    }
     //TODO Associate current index with a specific topic
 
-    final
-    Config config;
+    final Config config;
 
     public ConfigListener(Config config) {
         this.config = config;
     }
 
-    public void setCurrentKafkaIndex(String topic, int partition, int currentKafkaIndex) {
+    public void setCurrentKafkaIndex(String topic, int partition, long currentKafkaIndex) {
         this.currentKafkaIndex = currentKafkaIndex;
         seekCallback.seek(topic, partition, currentKafkaIndex);
     }
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @KafkaListener(topics = "${config.startup.topic}")
-    public void processMessage(String content) {
+    public void processMessage(ConsumerRecord<String, String> record) {
+        String content = record.value();
+        long currentOffset = record.offset();
+        int partition = record.partition();
+        String topic = record.topic();
+        TopicPartition topicPartition = new TopicPartition(topic, partition); // Adjust as needed
+
         logMessage(this.getClass().getName(), "processMessage", content);
         currentKafkaIndex++;
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             config.setConfigurationValue(objectMapper.readValue(content, ConfigItem.class));
         } catch (Exception e) {
             logError(this.getClass().getName(), "processMessage", e);
         }
+        logMessage("Current Offset: " + currentOffset + ", endOffsets: " + endOffsets);
+        logMessage("topicPartition: " + topicPartition);
+        logMessage("endOffsets.get(topicPartition): " + endOffsets.get(topicPartition));
+        if (currentOffset + 1 >= endOffsets.getOrDefault(topicPartition, Long.MAX_VALUE)) {
+            System.out.println("Reached the end of the topic.");
+            isReady = true;
+        }
+
         logMessage(this.getClass().getName(), "processMessage", "exiting");
     }
 
@@ -65,6 +84,7 @@ public class ConfigListener implements ConsumerSeekAware {
         logMessage("Storing ConsumerSeekCallback for future use.");
         this.seekCallback = callback;
     }
+    private final Map<TopicPartition, Long> endOffsets = new ConcurrentHashMap<>();
 
     /**
      * When using group management, called when partition assignments change.
@@ -80,27 +100,30 @@ public class ConfigListener implements ConsumerSeekAware {
         for (TopicPartition key : assignments.keySet()) {
             logMessage(key.topic() + "=<" + assignments.get(key) + ">");
             if (config.getTopicName().equals(key.topic())) {
-                currentKafkaIndex = assignments.get(key).intValue();
+                endOffsets.put(key, assignments.get(key));
+                currentKafkaIndex = assignments.get(key);
             }
         }
 
         if ("End".equalsIgnoreCase(config.getConfigStart())) {
+            isReady = true;
             logMessage("Not bothering with any kind of seek.");
         } else if ("Start".equalsIgnoreCase(config.getConfigStart())) {
             logMessage("Seeking to beginning of topic");
-            setCurrentKafkaIndex(config.getTopicName(), 0, 0);
-            currentKafkaIndex = 0;
+            currentKafkaIndex = 0L;
+            setCurrentKafkaIndex(config.getTopicName(), 0, currentKafkaIndex);
+            isReady = true;
         } else {
             logMessage("Seeking to position <" + config.getConfigStart() + ">");
-            int startPosition = calculateStartPositionFromConfiguration(config.getConfigStart());
+            long startPosition = calculateStartPositionFromConfiguration(config.getConfigStart());
             setCurrentKafkaIndex(config.getTopicName(), 0, startPosition);
         }
 
     }
 
-    private int calculateStartPositionFromConfiguration(String configStart) {
+    private long calculateStartPositionFromConfiguration(String configStart) {
         try {
-            return parseInt(configStart);
+            return parseLong(configStart);
         } catch (NumberFormatException nfe) {
             logError(ConfigListener.class.getName(), "calculateStartPositionFromConfiguration", nfe);
         }
@@ -114,9 +137,8 @@ public class ConfigListener implements ConsumerSeekAware {
 //     * @param assignments the new assignments and their current offsets.
 //     * @param callback    the callback to perform a seek.
 //     */
-//    @Override
-//    public void onIdleContainer(Map<TopicPartition, Long> assignments, ConsumerSeekCallback callback) {
-//        logger.entering(this.getClass().getName(), "onIdleContainer", new Object[]{assignments, callback});
-//
-//    }
+    @Override
+    public void onIdleContainer(@NonNull  Map<TopicPartition, Long> assignments, @NonNull ConsumerSeekCallback callback) {
+        logMessage(this.getClass().getName(), "onIdleContainer", new Object[]{assignments, callback});
+    }
 }

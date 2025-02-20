@@ -4,27 +4,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oopuniversity.liveconfig.config.Config;
 import com.oopuniversity.liveconfig.config.ConfigItem;
+import com.oopuniversity.liveconfig.config.ConfigListener;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.oopuniversity.liveconfig.logging.LogUtil.logError;
 import static com.oopuniversity.liveconfig.logging.LogUtil.logMessage;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 public class ConfigController {
 
     final
     Config config;
+    final ConfigListener configListener;
 
     public final KafkaTemplate<String, String> kafkaTemplate;
 
-    public ConfigController(Config config, KafkaTemplate<String, String> kafkaTemplate) {
+    public ConfigController(Config config, KafkaTemplate<String, String> kafkaTemplate, ConfigListener configListener) {
         this.config = config;
         this.kafkaTemplate = kafkaTemplate;
+        this.configListener = configListener;
     }
 
     /**
@@ -63,7 +66,10 @@ public class ConfigController {
      * @return A representation of the entire Config object
      */
     @GetMapping(value = "/config/get", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getConfiguration() {
-        return config.toString();
+    public ResponseEntity<String> getConfiguration() {
+        if (null == config) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+        return new ResponseEntity<>(config.toString(), OK);
     }
 }

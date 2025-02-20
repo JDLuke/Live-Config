@@ -14,7 +14,7 @@ import static com.oopuniversity.liveconfig.logging.LogUtil.logMessage;
 public class Config {
 
     @Autowired
-    Map<String,String> appConfiguration;
+    private Map<String,String> appConfiguration;
 
     @Value("${config.startup.topic}")
     private String topicName;
