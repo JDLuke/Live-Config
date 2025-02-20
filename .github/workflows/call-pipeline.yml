@@ -1,0 +1,15 @@
+name: Pipeline
+
+on:
+  push:  # Run tests on all branches
+    branches: ["**"]
+  pull_request:  # Run tests on PRs targeting any branch
+    branches: ["**"]
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  run-pipeline:
+    uses: JDLuke/cicd/.github/workflows/pipeline.yml@main
