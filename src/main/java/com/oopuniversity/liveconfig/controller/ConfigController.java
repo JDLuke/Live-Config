@@ -17,12 +17,16 @@ import java.util.logging.Logger;
 @RestController
 public class ConfigController {
 
-    @Autowired
+    final
     Config config;
 
-    @Autowired
-    public KafkaTemplate kafkaTemplate;
+    public final KafkaTemplate<String, String> kafkaTemplate;
     private final Logger logger = Logger.getLogger("config");
+
+    public ConfigController(Config config, KafkaTemplate kafkaTemplate) {
+        this.config = config;
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     /**
      * Get the value of one configuration entry.
@@ -60,7 +64,7 @@ public class ConfigController {
      * @return A representation of the entire Config object
      */
     @GetMapping(value = "/config/get", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Config getConfiguration() {
-        return config;
+    public String getConfiguration() {
+        return config.toString();
     }
 }

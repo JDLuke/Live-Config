@@ -5,8 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 import java.util.logging.Logger;
@@ -45,7 +43,7 @@ public class Config {
 
     void setConfigurationValue(ConfigItem value) {
         logger.config("Setting configuration key <" + value.getKey() + "> to <" + value.getValue() + ">");
-        if (value.getValue().length() == 0) {
+        if (value.getValue().isEmpty()) {
             logger.config("Deleting...");
             appConfiguration.remove(value.getKey());
         } else {
