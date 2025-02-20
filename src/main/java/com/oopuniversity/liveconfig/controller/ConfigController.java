@@ -21,13 +21,15 @@ public class ConfigController {
     final
     Config config;
     final ConfigListener configListener;
+    final ObjectMapper objectMapper;
 
     public final KafkaTemplate<String, String> kafkaTemplate;
 
-    public ConfigController(Config config, KafkaTemplate<String, String> kafkaTemplate, ConfigListener configListener) {
+    public ConfigController(Config config, KafkaTemplate<String, String> kafkaTemplate, ConfigListener configListener, ObjectMapper objectMapper) {
         this.config = config;
         this.kafkaTemplate = kafkaTemplate;
         this.configListener = configListener;
+        this.objectMapper = objectMapper;
     }
 
     /**
@@ -56,7 +58,7 @@ public class ConfigController {
         //Do NOT set configuration directly, stick it onto a Kafka stream.
         logMessage(this.getClass().getName(), "putConfigValue", new String[]{key, value});
         try {
-            kafkaTemplate.send("config", new ObjectMapper().writeValueAsString(new ConfigItem(key, value)));
+            kafkaTemplate.send("config", objectMapper.writeValueAsString(new ConfigItem(key, value)));
         } catch (JsonProcessingException e) {
             logError(this.getClass().getName(), "putConfigValue", e);
         }

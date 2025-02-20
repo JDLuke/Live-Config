@@ -22,51 +22,45 @@ import static java.lang.Long.parseLong;
  */
 @Component
 public class ConfigListener implements ConsumerSeekAware {
-    Long currentKafkaIndex = 0L;
-    private ConsumerSeekCallback seekCallback;
+    private final String className = "ConfigListener";
 
-    boolean isReady = false;
+    private ConsumerSeekCallback seekCallback;
+    private final ObjectMapper objectMapper;
+    private boolean isReady = false;
+
     public boolean isReady() {
         return isReady;
     }
-    //TODO Associate current index with a specific topic
 
     final Config config;
 
-    public ConfigListener(Config config) {
+    public ConfigListener(Config config, ObjectMapper objectMapper) {
         this.config = config;
+        this.objectMapper = objectMapper;
     }
 
     public void setCurrentKafkaIndex(String topic, int partition, long currentKafkaIndex) {
-        this.currentKafkaIndex = currentKafkaIndex;
         seekCallback.seek(topic, partition, currentKafkaIndex);
     }
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @KafkaListener(topics = "${config.startup.topic}")
     public void processMessage(ConsumerRecord<String, String> record) {
         String content = record.value();
+        logMessage(className, "processMessage", record);
+        
         long currentOffset = record.offset();
         int partition = record.partition();
         String topic = record.topic();
         TopicPartition topicPartition = new TopicPartition(topic, partition); // Adjust as needed
 
-        logMessage(this.getClass().getName(), "processMessage", content);
-        currentKafkaIndex++;
         try {
             config.setConfigurationValue(objectMapper.readValue(content, ConfigItem.class));
         } catch (Exception e) {
-            logError(this.getClass().getName(), "processMessage", e);
+            logError(className, "processMessage", e);
         }
-        logMessage("Current Offset: " + currentOffset + ", endOffsets: " + endOffsets);
-        logMessage("topicPartition: " + topicPartition);
-        logMessage("endOffsets.get(topicPartition): " + endOffsets.get(topicPartition));
-        if (currentOffset + 1 >= endOffsets.getOrDefault(topicPartition, Long.MAX_VALUE)) {
-            System.out.println("Reached the end of the topic.");
+        if (currentOffset + 1 >= endOffsets.getOrDefault(topicPartition, Long.MAX_VALUE))
             isReady = true;
-        }
-
-        logMessage(this.getClass().getName(), "processMessage", "exiting");
+        logMessage(className, "processMessage", "exiting");
     }
 
 
@@ -79,11 +73,12 @@ public class ConfigListener implements ConsumerSeekAware {
      */
     @Override
     public void registerSeekCallback(@NonNull ConsumerSeekCallback callback) {
-        logMessage(this.getClass().getName(), "registerSeekCallback", callback);
+        logMessage(className, "registerSeekCallback", callback);
 
         logMessage("Storing ConsumerSeekCallback for future use.");
         this.seekCallback = callback;
     }
+
     private final Map<TopicPartition, Long> endOffsets = new ConcurrentHashMap<>();
 
     /**
@@ -101,7 +96,7 @@ public class ConfigListener implements ConsumerSeekAware {
             logMessage(key.topic() + "=<" + assignments.get(key) + ">");
             if (config.getTopicName().equals(key.topic())) {
                 endOffsets.put(key, assignments.get(key));
-                currentKafkaIndex = assignments.get(key);
+//                currentKafkaIndex = assignments.get(key);
             }
         }
 
@@ -110,8 +105,7 @@ public class ConfigListener implements ConsumerSeekAware {
             logMessage("Not bothering with any kind of seek.");
         } else if ("Start".equalsIgnoreCase(config.getConfigStart())) {
             logMessage("Seeking to beginning of topic");
-            currentKafkaIndex = 0L;
-            setCurrentKafkaIndex(config.getTopicName(), 0, currentKafkaIndex);
+            setCurrentKafkaIndex(config.getTopicName(), 0, 0L);
             isReady = true;
         } else {
             logMessage("Seeking to position <" + config.getConfigStart() + ">");
@@ -139,6 +133,6 @@ public class ConfigListener implements ConsumerSeekAware {
 //     */
     @Override
     public void onIdleContainer(@NonNull  Map<TopicPartition, Long> assignments, @NonNull ConsumerSeekCallback callback) {
-        logMessage(this.getClass().getName(), "onIdleContainer", new Object[]{assignments, callback});
+        logMessage(className, "onIdleContainer", new Object[]{assignments, callback});
     }
 }
