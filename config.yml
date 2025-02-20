@@ -1,2 +1,3 @@
 java_version: 22
 extra_build: true
+java_cache: gradle
