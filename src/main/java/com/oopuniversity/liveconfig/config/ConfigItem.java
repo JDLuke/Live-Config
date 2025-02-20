@@ -1,8 +1,5 @@
 package com.oopuniversity.liveconfig.config;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class ConfigItem {
     private String key;
     private String value;

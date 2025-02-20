@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.logging.Logger;
+import static com.oopuniversity.liveconfig.logging.LogUtil.logError;
+import static com.oopuniversity.liveconfig.logging.LogUtil.logMessage;
 
 @RestController
 public class ConfigController {
@@ -20,7 +21,6 @@ public class ConfigController {
     Config config;
 
     public final KafkaTemplate<String, String> kafkaTemplate;
-    private final Logger logger = Logger.getLogger("config");
 
     public ConfigController(Config config, KafkaTemplate<String, String> kafkaTemplate) {
         this.config = config;
@@ -51,11 +51,11 @@ public class ConfigController {
     @PostMapping("/config/set/{key}/{value}")
     public void putConfigValue(@PathVariable("key") String key, @PathVariable("value") String value) {
         //Do NOT set configuration directly, stick it onto a Kafka stream.
-        logger.entering(this.getClass().getName(), "putConfigValue", new String[]{key, value});
+        logMessage(this.getClass().getName(), "putConfigValue", new String[]{key, value});
         try {
             kafkaTemplate.send("config", new ObjectMapper().writeValueAsString(new ConfigItem(key, value)));
         } catch (JsonProcessingException e) {
-            logger.throwing(this.getClass().getName(), "putConfigValue", e);
+            logError(this.getClass().getName(), "putConfigValue", e);
         }
     }
     /**
