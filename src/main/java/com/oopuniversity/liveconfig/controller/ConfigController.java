@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oopuniversity.liveconfig.config.Config;
 import com.oopuniversity.liveconfig.config.ConfigItem;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +22,7 @@ public class ConfigController {
     public final KafkaTemplate<String, String> kafkaTemplate;
     private final Logger logger = Logger.getLogger("config");
 
-    public ConfigController(Config config, KafkaTemplate kafkaTemplate) {
+    public ConfigController(Config config, KafkaTemplate<String, String> kafkaTemplate) {
         this.config = config;
         this.kafkaTemplate = kafkaTemplate;
     }

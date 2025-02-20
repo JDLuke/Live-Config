@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
-import java.util.logging.Logger;
+
+import static com.oopuniversity.liveconfig.logging.LogUtil.logError;
+import static com.oopuniversity.liveconfig.logging.LogUtil.logMessage;
 
 public class Config {
 
@@ -23,8 +25,6 @@ public class Config {
     @Value("${config.startup.seek}")
     private String configStart;
 
-    private final Logger logger = Logger.getLogger(Config.class.getName());
-
     public String getConfigStart() {
         return configStart;
     }
@@ -37,28 +37,30 @@ public class Config {
     public String getConfigurationValue(String key) {
         String value;
         value = appConfiguration.get(key);
-        logger.config("Returning configuration value for key '" + key + "' as '" + value + "'");
+        logMessage("Returning configuration value for key '" + key + "' as '" + value + "'");
         return value;
     }
 
+
     void setConfigurationValue(ConfigItem value) {
-        logger.config("Setting configuration key <" + value.getKey() + "> to <" + value.getValue() + ">");
+        logMessage("Setting configuration key <" + value.getKey() + "> to <" + value.getValue() + ">");
         if (value.getValue().isEmpty()) {
-            logger.config("Deleting...");
+            logMessage("Deleting...");
             appConfiguration.remove(value.getKey());
         } else {
-            logger.config("Updating...");
+            logMessage("Updating...");
             appConfiguration.put(value.getKey(), value.getValue());
         }
-        logger.exiting(this.getClass().getName(), "setConfigurationValue");
+        logMessage(this.getClass().getName() + " - setConfigurationValue");
     }
 
     public String toString() {
         try {
             return new ObjectMapper().writeValueAsString(appConfiguration);
         } catch (JsonProcessingException e) {
-            logger.throwing(this.getClass().getName(), "toString", e);
+            logError(this.getClass().getName(), "toString", e);
         }
         return "Error";
     }
+
 }
