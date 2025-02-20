@@ -35,7 +35,7 @@ public class Config {
     /**
      *
      * @return A Map containing the entire current set of configuration entries
-     *
+     * @param key - A String containing the configuration value we are seeking
      */
 
     public String getConfigurationValue(String key) {
