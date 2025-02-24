@@ -17,3 +17,5 @@ In order to run and test this you will need:
 * A running instance of Kafka.  
     You can follow their quickstart far enough to get the server up and running, or you can run it in a Docker container (I use apache/kafka)
 * Either curl or Postman, if you want to exercise the endpoints.  IntelliJ also has a client, or you can just roll your own if you're into that kind of thing.
+
+I'm also working on a docker-compose project that will use this, a few industry-standard images, and one custom project to create a working example.
