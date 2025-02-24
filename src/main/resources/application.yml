@@ -1,13 +1,14 @@
 spring:
+  application:
+    name: Live-Config
   kafka:
     consumer:
-      group-id:
-        myGroup
       client-id:
         config
+    bootstrap-servers: localhost:9092,kafka:9092
 
-    bootstrap-servers:
-      localhost:9092
+bootstrap:
+  servers: localhost:9092,kafka:9092
 
 server:
   port: 8080
@@ -16,8 +17,6 @@ logging:
   level:
     org.springframework: warn
     org.yaml: warn
-    com.oopuniversity.kafkapoc.config: trace
-    com.oopuniversity.kafkapoc: debug
 #startup provides a way of ignoring really old configuration values which are no longer needed.
 #This can be because they are obsolete, or because their values have all been updated so there
 #is no reason to dig quite so far into the past.
@@ -50,3 +49,12 @@ management:
     web:
       exposure:
         include: '*'
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    appname: Live-Config
+  client:
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+    register-with-eureka: true

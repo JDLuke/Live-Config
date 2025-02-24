@@ -1,4 +1,7 @@
+### POST request to create a key/value pair
+POST http://localhost:8080/config/set/{{name}}/{{value}}
+
 ### GET request to example server
-GET https://localhost:8080/config/get/value
+GET http://localhost:8080/config/get/{{name}}
 
 ###

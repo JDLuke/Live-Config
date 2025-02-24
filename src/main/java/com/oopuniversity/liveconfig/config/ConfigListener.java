@@ -28,6 +28,10 @@ public class ConfigListener implements ConsumerSeekAware {
     private final ObjectMapper objectMapper;
     private boolean isReady = false;
 
+    void ready() {
+        isReady = true;
+    }
+
     public boolean isReady() {
         return isReady;
     }
@@ -59,7 +63,7 @@ public class ConfigListener implements ConsumerSeekAware {
             logError(className, "processMessage", e);
         }
         if (currentOffset + 1 >= endOffsets.getOrDefault(topicPartition, Long.MAX_VALUE))
-            isReady = true;
+            ready();
         logMessage(className, "processMessage", "exiting");
     }
 
@@ -96,17 +100,16 @@ public class ConfigListener implements ConsumerSeekAware {
             logMessage(key.topic() + "=<" + assignments.get(key) + ">");
             if (config.getTopicName().equals(key.topic())) {
                 endOffsets.put(key, assignments.get(key));
-//                currentKafkaIndex = assignments.get(key);
             }
         }
 
         if ("End".equalsIgnoreCase(config.getConfigStart())) {
-            isReady = true;
+            ready();
             logMessage("Not bothering with any kind of seek.");
         } else if ("Start".equalsIgnoreCase(config.getConfigStart())) {
             logMessage("Seeking to beginning of topic");
             setCurrentKafkaIndex(config.getTopicName(), 0, 0L);
-            isReady = true;
+            ready();
         } else {
             logMessage("Seeking to position <" + config.getConfigStart() + ">");
             long startPosition = calculateStartPositionFromConfiguration(config.getConfigStart());

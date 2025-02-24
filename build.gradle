@@ -27,7 +27,9 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
-
+ext {
+    set('springCloudVersion', "2023.0.5")
+}
 
 
 jacoco {
@@ -43,10 +45,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.projectlombok:lombok'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2023.0.5'
+        // Use the appropriate Spring Cloud version
+    }
 }
 
 tasks.named('test') {
@@ -59,7 +69,7 @@ checkstyle {
     configFile = file('config/checkstyle/checkstyle.xml') // Path to your Checkstyle configuration file
 }
 
-tasks.withType(Checkstyle) {
+tasks.withType(Checkstyle).configureEach {
     reports {
         xml.required.set(false)
         html.required.set(true)
